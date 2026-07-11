@@ -8,4 +8,4 @@ opencv-python-headless
 streamlit-webrtc
 tensorflow-cpu
 tensorflow-hub
-numpy
+numpy<2.0.0
