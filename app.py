@@ -139,21 +139,53 @@
 
 
 
+# import streamlit as st
+# import cv2
+# from ultralytics import YOLO
+# import numpy as np
+# import tensorflow as tf
+# import tensorflow_hub as hub
+# import csv
+# import os
+# import av
+# from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+
+# # YAMNet model ko cache karne ke liye
+# os.environ["TFHUB_CACHE_DIR"] = "./model_cache"
+
+# st.set_page_config(page_title="TriSense AI | Cloud Edition", page_icon="🛡️", layout="wide")
+
+
+
+import os
+# --- RAM & CPU OPTIMIZATION (SEGFAULT FIX) ---
+# AI ko majboor karein ke woh kam memory aur 1 thread use kare
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
+os.environ["TF_NUM_INTEROP_THREADS"] = "1"
+
+# --- CRITICAL IMPORT ORDER ---
+import av  # Isay LAZMI cv2 aur torch se pehle import karna hai!
+import cv2 
 import streamlit as st
-import cv2
 from ultralytics import YOLO
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
 import csv
-import os
-import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+
+# TensorFlow ko strictly 1 thread tak mehdood karein
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 # YAMNet model ko cache karne ke liye
 os.environ["TFHUB_CACHE_DIR"] = "./model_cache"
 
 st.set_page_config(page_title="TriSense AI | Cloud Edition", page_icon="🛡️", layout="wide")
+
+# ... (Baqi sara code waisa hi rahega jaisa pehle tha) ...
 
 # ==========================================
 # 1. LOAD MODELS
