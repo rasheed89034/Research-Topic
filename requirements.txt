@@ -2,9 +2,20 @@
 #ultralytics
 #opencv-python-headless
 #streamlit-webrtc
+#streamlit
+#ultralytics
+#opencv-python-headless
+#streamlit-webrtc
+#tensorflow-cpu
+#tensorflow-hub
+#numpy<2.0.0
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
 streamlit
 ultralytics
-opencv-python-headless
+opencv-python-headless==4.8.0.74
 streamlit-webrtc
 tensorflow-cpu
 tensorflow-hub
