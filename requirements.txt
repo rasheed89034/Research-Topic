@@ -1,4 +1,11 @@
+#streamlit
+#ultralytics
+#opencv-python-headless
+#streamlit-webrtc
 streamlit
 ultralytics
 opencv-python-headless
 streamlit-webrtc
+tensorflow-cpu
+tensorflow-hub
+numpy
