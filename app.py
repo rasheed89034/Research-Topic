@@ -307,19 +307,20 @@
 #         async_processing=True
 #     )
 
-
 import os
 import av
 import cv2 
 import streamlit as st
 from ultralytics import YOLO
-import numpy as np
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 
+# ==========================================
+# PAGE CONFIGURATION
+# ==========================================
 st.set_page_config(page_title="TriSense AI | Vision Only", page_icon="👁️", layout="wide")
 
 # ==========================================
-# LOAD VISION MODEL ONLY (Saves RAM)
+# LOAD VISION MODEL ONLY
 # ==========================================
 @st.cache_resource
 def load_vision_model():
@@ -331,48 +332,65 @@ RTC_CONFIGURATION = RTCConfiguration(
     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
 )
 
-st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>🚨 TriSense AI - Cloud CCTV (Vision Only)</h1>", unsafe_allow_html=True)
-st.markdown("---")
+# ==========================================
+# PROFESSIONAL SIDEBAR DESIGN
+# ==========================================
+st.sidebar.markdown("<h1 style='text-align: center; color: #FF4B4B;'>👁️ TriSense AI</h1>", unsafe_allow_html=True)
+st.sidebar.markdown("<p style='text-align: center; color: gray;'>Vision Intelligence Only</p>", unsafe_allow_html=True)
+st.sidebar.markdown("---")
 
-col1, col2 = st.columns([1, 3])
-with col1:
-    conf_threshold = st.slider("🎯 Vision Threshold", min_value=0.10, max_value=1.00, value=0.20, step=0.05)
+st.sidebar.header("⚙️ Core Settings")
+# Default threshold ko main ne 0.20 rakha hai taake live detection fauran pakri jaye
+conf_threshold = st.sidebar.slider("🎯 Vision Threshold", min_value=0.10, max_value=1.00, value=0.20, step=0.05)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("<p style='text-align: center; font-size: 12px;'>Developed by <b>Rasheed Ahmad</b><br>© 2026 TriSense AI</p>", unsafe_allow_html=True)
 
 # ==========================================
-# WEBRTC PROCESSOR
+# MAIN DASHBOARD UI
+# ==========================================
+st.title("🚨 Command Center - Live Video AI")
+st.markdown("Real-time YOLOv8 classification monitoring. (Audio module is currently bypassed).")
+st.markdown("---")
+
+col1, col2 = st.columns([2, 1])
+
+# ==========================================
+# WEBRTC PROCESSOR (VIDEO ONLY)
 # ==========================================
 def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
     img = frame.to_ndarray(format="bgr24")
     
+    # YOLOv8 Live Prediction
     results = vision_model(img, verbose=False)
     top1_index = results[0].probs.top1
     top1_conf = float(results[0].probs.top1conf)
     vision_class = results[0].names[top1_index]
     
+    # Draw Vision Status on Camera Feed (Bara aur Wazeh Text)
     if top1_conf >= conf_threshold:
-        v_label = f"VISION: {vision_class.upper()} ({int(top1_conf * 100)}%)"
+        v_label = f"ALERT: {vision_class.upper()} ({int(top1_conf * 100)}%)"
         v_color = (0, 255, 0) if vision_class.lower() == "normal" else (0, 0, 255)
-        cv2.putText(img, v_label, (20, 50), cv2.FONT_HERSHEY_DUPLEX, 0.8, v_color, 2)
+        cv2.putText(img, v_label, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.2, v_color, 3)
     else:
-        cv2.putText(img, "VISION: Scanning...", (20, 50), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 2)
+        cv2.putText(img, "Scanning Environment...", (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.2, (255, 255, 255), 3)
         
     return av.VideoFrame.from_ndarray(img, format="bgr24")
 
-with col2:
+with col1:
     webrtc_streamer(
-        key="trisense_cctv",
+        key="trisense_vision",
         mode=WebRtcMode.SENDRECV,
         rtc_configuration=RTC_CONFIGURATION,
         video_frame_callback=video_frame_callback,
-        media_stream_constraints={"video": True, "audio": False}, # Audio False kiya hai
+        media_stream_constraints={"video": True, "audio": False}, # Strictly Video
         async_processing=True
     )
 
-
-
-
-
-
-
-
-
+with col2:
+    st.subheader("👁️ Live Telemetry")
+    st.info("ℹ️ AI prediction text is rendered directly on the live camera feed for zero-latency performance.")
+    
+    st.markdown("---")
+    st.markdown("### 🔔 System Logs")
+    st.success("Vision System Initialized...\nReady to detect anomalies.")
