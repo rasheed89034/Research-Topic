@@ -215,7 +215,7 @@ st.set_page_config(
 @st.cache_resource
 def load_model():
     # Make sure your latest model path is correct here
-    model_path = "runs/classify/AeroGuard/Vision_Model_Pro/weights/best.pt"
+    model_path = "best.pt"
     return YOLO(model_path)
 
 model = load_model()
